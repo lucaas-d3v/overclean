@@ -3,6 +3,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -120,12 +121,20 @@ public class Main extends Application {
             System.out.println("Ícones não encontrados");
         }
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 800, 600);
+        // minimos
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
 
-        primaryStage.setMaxWidth(Screen.getPrimary().getVisualBounds().getWidth());
-        primaryStage.setMaxHeight(Screen.getPrimary().getVisualBounds().getHeight());
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+
+        primaryStage.setMaximized(false);
+
+        // centralizar a janela (alternativa limpa ao centerOnScreen)
+        primaryStage.setX(screenBounds.getMinX() + (screenBounds.getWidth() - 800) / 2);
+        primaryStage.setY(screenBounds.getMinY() + (screenBounds.getHeight() - 600) / 2);
+
+        primaryStage.setResizable(true);
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("Overclean");
