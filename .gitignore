@@ -1,0 +1,61 @@
+# Arquivos compilados Java
+*.class
+*.jar
+*.war
+*.ear
+out/
+target/
+
+# Arquivos de build
+build/
+dist/
+
+# Arquivos de IDEs
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.bak
+*.cache
+
+# Python (caso use para scripts auxiliares)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+*.egg-info/
+
+# Dependências Python
+.pip/
+
+# Arquivos de configuração local
+config.local
+*.local
+
+# Cache de scripts
+*.sh~
+
+icons
+assets
+out
+requeriments.txt
