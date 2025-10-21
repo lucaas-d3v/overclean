@@ -1,0 +1,113 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    mainClass = 'br.com.overclean.Main'
+}
+
+// Configura o plugin OpenJFX
+javafx {
+    version = '21'
+    modules = [ 'javafx.controls' ]      // adicione 'javafx.fxml' se usar FXML
+    // detecta arquitetura e ajusta plataforma automaticamente
+    def arch = System.getProperty('os.arch') ?: ''
+    def os = org.gradle.internal.os.OperatingSystem.current()
+    if (os.isWindows()) {
+        platform = 'win'
+    } else if (os.isMacOsX()) {
+        // mac intel ou M1 (aarch)
+        platform = arch.contains('aarch') ? 'mac-aarch64' : 'mac'
+    } else {
+        // linux x86_64 ou arm64
+        platform = arch.contains('aarch') ? 'linux-aarch64' : 'linux'
+    }
+    println "Using JavaFX platform: ${platform}"
+}
+
+// Se você preferir usar um JavaFX SDK local (já baixado), descomente e ajuste:
+// javafx {
+//     sdk = '/home/lucas2078/javafx-sdk-21'
+//     modules = ['javafx.controls']
+// }
+
+dependencies {
+    // outras dependências do projeto aqui (se houver)
+    // NOTA: o plugin já coloca JavaFX nas configurations apropriadas
+}
+
+// ───────────── NATIVE (compila .c em src/main/native)
+tasks.register('buildNative') {
+    group = 'native'
+    description = 'Compila todos os .c em src/main/native e coloca binários em build/native e bin/'
+
+    doLast {
+        def srcDir = file('src/main/native')
+        if (!srcDir.exists()) {
+            println "Nenhum código nativo em ${srcDir} — pulando buildNative"
+            return
+        }
+        def outDir = file("$buildDir/native")
+        outDir.mkdirs()
+        def binDir = file("${projectDir}/bin")
+        binDir.mkdirs()
+
+        def cFiles = fileTree(dir: srcDir, include: '**/*.c').files
+        if (cFiles.isEmpty()) {
+            println "Nenhum arquivo .c encontrado em ${srcDir}"
+            return
+        }
+
+        cFiles.each { File cfile ->
+            def base = cfile.name.replaceFirst(/\.c$/, '')
+            def outFile = new File(outDir, base)
+            println "Compilando ${cfile} -> ${outFile}"
+            exec {
+                commandLine 'gcc', '-O2', '-Wall', cfile.absolutePath, '-o', outFile.absolutePath
+            }
+            def dest = new File(binDir, base)
+            dest.bytes = outFile.bytes
+            dest.setExecutable(true)
+            println "Gerado binário: ${dest}"
+        }
+    }
+}
+
+// integra nativo no build padrão
+tasks.named('build') {
+    dependsOn tasks.named('buildNative')
+}
+
+// limpeza nativa
+tasks.register('cleanNative') {
+    group = 'native'
+    doLast {
+        delete("$buildDir/native")
+        file('bin').eachFile { f -> if (f.isFile()) f.delete() }
+        println "cleanNative: removido build/native e arquivos em bin/"
+    }
+}
+tasks.named('clean') { dependsOn tasks.named('cleanNative') }
+
+// tarefa exemplo pra rodar script bash do resources
+tasks.register('runScript', Exec) {
+    group = 'overclean'
+    description = 'Executa src/main/resources/scripts/limparCache.sh'
+    commandLine 'bash', 'src/main/resources/scripts/limparCache.sh'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
