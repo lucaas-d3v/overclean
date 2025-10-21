@@ -1,66 +1,66 @@
-# Arquivos compilados Java
-*.class
-*.jar
-*.war
-*.ear
-out/
-target/
+# =========================================
+# 🧠 OverClean - Gerenciador de Performance
+# Projeto Java + Gradle + código nativo C
+# =========================================
 
-# Arquivos de build
+# === Gradle caches e temporários ===
+.gradle/
 build/
-dist/
+bin/
+out/
+lib/build/
 
-# Arquivos de IDEs
+# === IDEs e editores ===
 .idea/
-.vscode/
 *.iml
-*.iws
-*.ipr
-.classpath
-.project
-.settings/
+.vscode/
+*.class
+*.project
+*.classpath
 
-# Sistema operacional
+# === SO (arquivos ocultos de sistema) ===
 .DS_Store
 Thumbs.db
-*.swp
-*.swo
-*~
 
-# Logs
+# === Logs e temporários ===
 *.log
-
-# Arquivos temporários
 *.tmp
 *.bak
-*.cache
+*.swp
+*.swo
+*.old
 
-# Python (caso use para scripts auxiliares)
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-venv/
-env/
-*.egg-info/
+# === Arquivos gerados por scripts ===
+*.out
+*.pid
 
-# Dependências Python
-.pip/
-
-# Arquivos de configuração local
-config.local
-*.local
-
-# Cache de scripts
-*.sh~
-
-icons
-assets
-out
+# === Configurações locais ===
+.env
+local.properties
 requeriments.txt
-# Ignore Gradle project-specific cache directory
-.gradle
 
-# Ignore Gradle build output directory
-build
+# === Backups e artefatos manuais ===
+*.tar
+*.zip
+*.7z
+*.jar
+*.o
+*.a
+*.so
+
+# === Compilações nativas ===
+/build/native/
+/bin/procscan
+
+# === Assets temporários (gerados em runtime, se houver) ===
+src/main/resources/temp/
+src/main/resources/cache/
+
+# === Exceções (manter no Git) ===
+!gradlew
+!gradlew.bat
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!build.gradle
+!settings.gradle
+
