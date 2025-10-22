@@ -14,6 +14,10 @@ java {
     }
 }
 
+//application {
+//    mainClass = 'br.com.overclean.ProcessReader'
+//}
+
 application {
     mainClass = 'br.com.overclean.Main'
 }
@@ -44,8 +48,8 @@ javafx {
 // }
 
 dependencies {
-    // outras dependências do projeto aqui (se houver)
     // NOTA: o plugin já coloca JavaFX nas configurations apropriadas
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'
 }
 
 // ───────────── NATIVE (compila .c em src/main/native)

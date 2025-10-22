@@ -1,0 +1,58 @@
+{
+  "processes": [
+    {
+      "pid": 3051,
+      "rss_mb": 259.13,
+      "rss_kb": 265352,
+      "name": "spotify"
+    },
+    {
+      "pid": 3419,
+      "rss_mb": 435.42,
+      "rss_kb": 445868,
+      "name": "spotify"
+    },
+    {
+      "pid": 4004,
+      "rss_mb": 421.21,
+      "rss_kb": 431316,
+      "name": "java"
+    },
+    {
+      "pid": 7961,
+      "rss_mb": 350.76,
+      "rss_kb": 359180,
+      "name": "midori"
+    },
+    {
+      "pid": 8114,
+      "rss_mb": 104.3,
+      "rss_kb": 106808,
+      "name": "Privileged Cont"
+    },
+    {
+      "pid": 8574,
+      "rss_mb": 214.3,
+      "rss_kb": 219440,
+      "name": "Isolated Web Co"
+    },
+    {
+      "pid": 9043,
+      "rss_mb": 346.91,
+      "rss_kb": 355236,
+      "name": "Isolated Web Co"
+    },
+    {
+      "pid": 9206,
+      "rss_mb": 406.54,
+      "rss_kb": 416292,
+      "name": "Isolated Web Co"
+    },
+    {
+      "pid": 12601,
+      "rss_mb": 136.86,
+      "rss_kb": 140148,
+      "name": "cool-retro-term"
+    }
+  ]
+}
