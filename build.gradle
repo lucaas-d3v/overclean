@@ -48,8 +48,9 @@ javafx {
 // }
 
 dependencies {
-    // NOTA: o plugin já coloca JavaFX nas configurations apropriadas
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'  // Jackson pro json.
+    implementation 'org.xerial:sqlite-jdbc:3.45.3.0' // SQLite JDBC.
+
 }
 
 // ───────────── NATIVE (compila .c em src/main/native)

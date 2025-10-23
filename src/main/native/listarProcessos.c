@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-#define THRESHOLD_MB 100UL
+#define THRESHOLD_MB 1UL
 
 /* Converte páginas para bytes usando sysconf(_SC_PAGESIZE) */
 static unsigned long pages_to_bytes(unsigned long pages) {
