@@ -80,7 +80,9 @@ tasks.register('buildNative') {
             def outFile = new File(outDir, base)
             println "Compilando ${cfile} -> ${outFile}"
             exec {
-                commandLine 'gcc', '-O2', '-Wall', cfile.absolutePath, '-o', outFile.absolutePath
+                //gcc -O3 -march=native -mtune=native -fomit-frame-pointer -funroll-loops     listarProcessos.c -o listarProcessos
+
+                commandLine 'gcc', '-O3', '-march=native', '-mtune=native', '-fomit-frame-pointer', '-funroll-loops', cfile.absolutePath, '-o', outFile.absolutePath
             }
             def dest = new File(binDir, base)
             dest.bytes = outFile.bytes

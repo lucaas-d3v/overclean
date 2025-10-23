@@ -125,7 +125,6 @@ public class ProcessosProtegidos {
                 "udisksd",
                 "wpa_supplicant",
                 "polkitd",
-                "zerotier-one",
                 "slim",
                 "Xorg",
                 "(sd-pam)",
@@ -160,13 +159,11 @@ public class ProcessosProtegidos {
                 "gvfs-gphoto2-vo",
                 "gvfs-goa-volume",
                 "Thunar",
-                "code",
                 "xdg-desktop-por",
                 "xdg-document-po",
                 "xdg-permission-",
                 "chrome_crashpad",
                 "java",
-                "midori",
                 "GPU Process",
                 "Socket Process",
                 "Privileged Cont",
@@ -175,16 +172,12 @@ public class ProcessosProtegidos {
                 "Isolated Web Co",
                 "RDD Process",
                 "Web Content",
-                "Discord",
                 "gvfsd-metadata",
-                "cool-retro-term",
                 "bash",
                 "listarProcessos",
                 "xfconfd",
                 "sudo"
         };
-
-        criarTabela();
 
         // Insere em lote com uma única conexão (transação)
         try (Connection conn = db.connect()) {

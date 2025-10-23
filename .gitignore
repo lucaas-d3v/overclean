@@ -49,8 +49,6 @@ requeriments.txt
 *.so
 
 # === Compilações nativas ===
-/build/native/
-/bin/procscan
 
 # === Assets temporários (gerados em runtime, se houver) ===
 src/main/resources/temp/

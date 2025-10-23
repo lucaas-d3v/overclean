@@ -1,5 +1,7 @@
 package br.com.overclean;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -19,45 +21,159 @@ public class Main extends Application {
     private ProgressBar progressBar;
     private Label progressLabel;
     private boolean isRunningAction = false;
-    private Button[] botoesAcaoUnica; // Parte 2
-    private Button[] botoesAcaoCompleta; // Parte 1
     private Button[] todosBotoes; // Todos os botões juntos
 
     @Override
     public void start(Stage primaryStage) {
-        // ---------- Ações Únicas ----------
-        final String[] nomesAcaoUnica = {
-                "Atualizar Sistema", "Reparar Sistema", "Limpar Cache",
-                "Parar Processos Pesados", "Liberar Memória", "Desativar Serviços Não Usados"
-        };
-
-        botoesAcaoUnica = new Button[nomesAcaoUnica.length];
-        final double BUTTON_WIDTH = 160;
         final double BUTTON_HEIGHT = 30;
+        final double BUTTON_WIDTH = 160;
+        final ProcessReader processReader = new ProcessReader();
+        final ProcessosProtegidos processosProtegidos = new ProcessosProtegidos();
 
-        for (int i = 0; i < nomesAcaoUnica.length; i++) {
-            final String nome = nomesAcaoUnica[i];
-            botoesAcaoUnica[i] = new Button(nome);
-            botoesAcaoUnica[i].setOnAction(e -> executarTarefa(nome));
-            botoesAcaoUnica[i].setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-            botoesAcaoUnica[i].setMaxWidth(Double.MAX_VALUE);
-        }
+        // ---------- Ações Únicas ----------
+        Button botaoAtualizarSistema = new Button("Atualizar Sistema");
+        botaoAtualizarSistema.setOnAction(e -> executarTarefa("scripts/atualizar_sistema.sh"));
+        botaoAtualizarSistema.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        botaoAtualizarSistema.setMaxWidth(Double.MAX_VALUE);
+
+        Button botaoRepararSistema = new Button("Reparar Sistema");
+        botaoRepararSistema.setOnAction(e -> executarTarefa("scripts/reparar_sistema.sh"));
+        botaoRepararSistema.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        botaoRepararSistema.setMaxWidth(Double.MAX_VALUE);
+
+        Button botaoLimparCache = new Button("Limpar Cache");
+        botaoLimparCache.setOnAction(e -> executarTarefa("scripts/limpar_cache.sh"));
+        botaoLimparCache.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        botaoLimparCache.setMaxWidth(Double.MAX_VALUE);
+
+        Button botaoPararProcessosPesados = new Button("Parar Processos Pesados");
+        botaoPararProcessosPesados.setOnAction(e -> executarTarefa("scripts/pare_processos_pesados.sh"));
+        botaoPararProcessosPesados.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        botaoPararProcessosPesados.setMaxWidth(Double.MAX_VALUE);
+
+        Button botaoLiberarMemoria = new Button("Liberar Memória");
+
+        TabPane telaLimparRam = new TabPane();
+        botaoLiberarMemoria.setOnAction(e -> {
+            Stage popup = new Stage();
+            popup.setTitle("Liberar Memória");
+            popup.setResizable(true);
+
+            VBox layout = new VBox(10);
+            layout.setStyle("-fx-padding: 20; -fx-background-color: #f4f4f4;");
+
+            JsonNode root = processReader.getJsonProcesses();
+            if (root == null) {
+                layout.getChildren().add(new Label("Erro ao obter processos."));
+                Scene scene = new Scene(layout, 300, 100);
+                popup.setScene(scene);
+                popup.initOwner(botaoLiberarMemoria.getScene().getWindow());
+                popup.show();
+                return;
+            }
+
+            JsonNode processes = root.get("processes");
+            CheckBox[] processosCheckBoxes = new CheckBox[processes.size()];
+
+            VBox checkBoxContainer = new VBox(5);
+            if (processes != null && processes.isArray()) {
+                for (int i = 0; i < processes.size(); i++) {
+                    JsonNode proc = processes.get(i);
+                    String nome = proc.get("name").asText();
+
+                    if (processosProtegidos.existsByName(nome)) {
+                        continue; // pula processos protegidos
+                    }
+
+                    processosCheckBoxes[i] = new CheckBox(nome);
+                    checkBoxContainer.getChildren().add(processosCheckBoxes[i]);
+                }
+            } else {
+                System.err.println("JSON inválido: não encontrou 'processes'");
+            }
+
+            // ScrollPane para tornar rolável
+            ScrollPane scrollPane = new ScrollPane(checkBoxContainer);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setPrefHeight(200); // altura visível antes de rolar
+
+            Button limparButton = new Button("Limpar");
+            limparButton.setOnAction(ev -> {
+                for (CheckBox cb : processosCheckBoxes) {
+                    if (cb.isSelected()) {
+                        executarTarefa("scripts/liberar_memoria.sh " + cb.getText());
+                    }
+                }
+                popup.close();
+            });
+
+            layout.getChildren().addAll(scrollPane, limparButton);
+            layout.setAlignment(Pos.CENTER);
+
+            Scene scene = new Scene(layout, 300, 300);
+            popup.setScene(scene);
+            popup.initOwner(botaoLiberarMemoria.getScene().getWindow());
+            popup.show();
+        });
+
+        botaoLiberarMemoria.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        botaoLiberarMemoria.setMaxWidth(Double.MAX_VALUE);
+
+        Button botaoDesativarServicos = new Button("Desativar Serviços Não Usados");
+        botaoDesativarServicos.setOnAction(e ->
+
+        executarTarefa("scripts/desativar_servicos.sh"));
+        botaoDesativarServicos.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        botaoDesativarServicos.setMaxWidth(Double.MAX_VALUE);
 
         // ---------- Ações Completas ----------
-        final String[] nomesAcaoCompleta = {
-                "Desfragmentar Disco", "Verificar Erros de Disco",
-                "Limpar Arquivos Temporários", "Reiniciar Serviços",
-                "Atualizar Drivers", "Otimizar Inicialização"
+        Button botaoDesfragmentarDisco = new Button("Desfragmentar Disco");
+        botaoDesfragmentarDisco.setOnAction(e -> executarTarefa("scripts/desfragmentar_disco.sh"));
+        botaoDesfragmentarDisco.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        botaoDesfragmentarDisco.setMaxWidth(Double.MAX_VALUE);
+
+        Button botaoVerificarErrosDisco = new Button("Verificar Erros de Disco");
+        botaoVerificarErrosDisco.setOnAction(e -> executarTarefa("scripts/verificar_erros_disco.sh"));
+        botaoVerificarErrosDisco.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        botaoVerificarErrosDisco.setMaxWidth(Double.MAX_VALUE);
+
+        Button botaoLimparArquivosTemporarios = new Button("Limpar Arquivos Temporários");
+        botaoLimparArquivosTemporarios.setOnAction(e -> executarTarefa("scripts/limpar_arquivos_temporarios.sh"));
+        botaoLimparArquivosTemporarios.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        botaoLimparArquivosTemporarios.setMaxWidth(Double.MAX_VALUE);
+
+        Button botaoReiniciarServicos = new Button("Reiniciar Serviços");
+        botaoReiniciarServicos.setOnAction(e -> executarTarefa("scripts/reiniciar_servicos.sh"));
+        botaoReiniciarServicos.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        botaoReiniciarServicos.setMaxWidth(Double.MAX_VALUE);
+
+        Button botaoAtualizarDrivers = new Button("Atualizar Drivers");
+        botaoAtualizarDrivers.setOnAction(e -> executarTarefa("scripts/atualizar_drivers.sh"));
+        botaoAtualizarDrivers.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        botaoAtualizarDrivers.setMaxWidth(Double.MAX_VALUE);
+
+        Button botaoOtimizarInicializacao = new Button("Otimizar Inicialização");
+        botaoOtimizarInicializacao.setOnAction(e -> executarTarefa("scripts/otimizar_inicializacao.sh"));
+        botaoOtimizarInicializacao.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        botaoOtimizarInicializacao.setMaxWidth(Double.MAX_VALUE);
+
+        Button botoesAcaoUnica[] = {
+                botaoAtualizarSistema,
+                botaoRepararSistema,
+                botaoLimparCache,
+                botaoPararProcessosPesados,
+                botaoLiberarMemoria,
+                botaoDesativarServicos
         };
 
-        botoesAcaoCompleta = new Button[nomesAcaoCompleta.length];
-        for (int i = 0; i < nomesAcaoCompleta.length; i++) {
-            final String nome = nomesAcaoCompleta[i];
-            botoesAcaoCompleta[i] = new Button(nome);
-            botoesAcaoCompleta[i].setOnAction(e -> executarTarefa(nome));
-            botoesAcaoCompleta[i].setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-            botoesAcaoCompleta[i].setMaxWidth(Double.MAX_VALUE);
-        }
+        Button botoesAcaoCompleta[] = {
+                botaoDesfragmentarDisco,
+                botaoVerificarErrosDisco,
+                botaoLimparArquivosTemporarios,
+                botaoReiniciarServicos,
+                botaoAtualizarDrivers,
+                botaoOtimizarInicializacao
+        };
 
         // ---------- Unir todos os botões ----------
         todosBotoes = new Button[botoesAcaoUnica.length + botoesAcaoCompleta.length];
@@ -108,6 +224,9 @@ public class Main extends Application {
         VBox root = new VBox(20, titulo, top, logBox, progressBox);
         root.setStyle("-fx-padding: 20;");
         root.setPrefSize(800, 600);
+
+        root.getChildren().add(telaLimparRam); // adiciona o TabPane à interface
+        VBox.setVgrow(telaLimparRam, Priority.ALWAYS); // ocupa espaço restante
 
         VBox.setVgrow(top, Priority.ALWAYS);
         VBox.setVgrow(logBox, Priority.SOMETIMES);
